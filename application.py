@@ -2,10 +2,9 @@ import sqlite3
 import hashlib
 import streamlit as st
 
-# -------------------- PAGE CONFIGURATION --------------------
+
 st.set_page_config(page_title="Mining Monitoring Application", layout="wide")
 
-# -------------------- DATABASE SETUP --------------------
 conn = sqlite3.connect("mining_users.db", check_same_thread=False)
 cursor = conn.cursor()
 cursor.execute("""
@@ -25,7 +24,6 @@ def hash_password(password):
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 
-# -------------------- SESSION STATE --------------------
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "page" not in st.session_state:
@@ -58,7 +56,7 @@ permissions = {
 
 
 def navigation_page():
-    st.title("⛏️ Mining Management System")
+    st.title(" Mining Management System")
     st.subheader("Welcome to the Mining Management System")
     st.write("Please sign up to create your account, or log in if you already have an account.")
     col1, col2 = st.columns(2)
@@ -454,7 +452,7 @@ def home_page():
             st.info("No user accounts found.")
 
 
-# -------------------- APP ROUTING --------------------
+
 if not st.session_state.logged_in:
     if st.session_state.page == "Navigation":
         navigation_page()
