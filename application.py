@@ -19,7 +19,6 @@ cursor.execute("""
     )
 """)
 conn.commit()
-
 def hash_password(password):
     """Hash a password (use a dedicated password-hashing library in production)."""
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
@@ -156,8 +155,7 @@ def home_page():
 
     inc = st.session_state.incidents
     eq = st.session_state.equipment
-
-    if module == "Dashboard":
+if module == "Dashboard":
         st.header("📊 Dashboard")
 
         col1, col2, col3 = st.columns(3)
@@ -199,8 +197,7 @@ def home_page():
 
             else:
                 st.info("No equipment registered.")
-
-    elif module == "Worker Safety":
+elif module == "Worker Safety":
 
         st.header("👷Worker Health and Safety Monitoring")
         worker_id = st.text_input("Worker ID")
@@ -235,8 +232,7 @@ def home_page():
                 st.success("No major unsafe conditions detected.")
                 st.success("Worker is currently considered safe.")
             st.info("Worker safety monitoring complete.")
-
-    elif module == "Safety Incidents":
+elif module == "Safety Incidents":
         st.header("Safety Incident Database")
         option = st.selectbox("Select an option", ["Add Incident", "View Incidents", "Search Incidents", "Filter Incidents", "Categorise Incidents", "Count Incidents", "Analyse Incident Trends"])
         if option == "Add Incident":
@@ -305,7 +301,7 @@ def home_page():
                 most_common = max(counts, key=counts.get)
                 st.info(f"Most common severity: {most_common}")
 
-    elif module == "Equipment database":
+elif module == "Equipment database":
         st.header("Equipment Database")
         option = st.selectbox("Select an option", ["Add Equipment", "View Equipment", "Search Equipment", "Filter Equipment", "Count Equipment", "Check Equipment Status"])
         if option == "Add Equipment":
@@ -380,7 +376,7 @@ def home_page():
                     if needs_attention: st.warning("Status: ATTENTION REQUIRED")
                     else: st.success("Status: Equipment is OK")
 
-    elif module == "Risk Assessment":
+elif module == "Risk Assessment":
         st.header("Mining Risk Assessment")
         hazard = st.text_input("Enter Hazard")
         likelihood = st.selectbox("Likelihood (1-5)", [1, 2, 3, 4, 5])
@@ -402,7 +398,7 @@ def home_page():
             elif classification == "Medium": st.info("Medium risk identified. Appropriate control measures are required.")
             else: st.success("Low risk identified. Continue monitoring the hazard.")
 
-    elif module == "Equipment Monitoring":
+elif module == "Equipment Monitoring":
         st.header("Equipment Condition Monitoring")
         equipment_id = st.text_input("Enter Equipment ID")
         temperature = st.number_input("Enter Temperature (°C)", min_value=0.0, step=1.0)
@@ -432,8 +428,7 @@ def home_page():
             if temperature_status == "CRITICAL" or vibration_status == "CRITICAL": st.error("Inspection required.")
             elif temperature_status == "WARNING" or vibration_status == "WARNING": st.warning("Monitoring required.")
             else: st.success("Equipment operating normally.")
-
-    elif module == "Maintenance":
+elif module == "Maintenance":
         st.title("Maintenance Management")
         equipment_id = st.text_input("Enter Equipment ID", key="maintenance_equipment_id")
         equipment_type = st.selectbox("Enter Equipment Type", ["Haul Truck", "Loader", "Excavator", "Drill", "Bulldozer", "Crusher", "Conveyor", "Other"], key="maintenance_equipment_type")
@@ -464,7 +459,7 @@ def home_page():
                 if maintenance_status == "Normal" and downtime <= 20 and repeated_alerts < 3 and availability >= 80:
                     st.success("Equipment is operating normally.")
 
-    elif module == "Alerts & Notifications":
+elif module == "Alerts & Notifications":
         st.header("Alerts & Notifications")
         alerts = []
         for i, equipment_id in enumerate(eq["equipment_ids"]):
@@ -478,7 +473,7 @@ def home_page():
         else:
             st.success("There are currently no equipment alerts.")
 
-    elif module == "Manage Users":
+elif module == "Manage Users":
         st.header("Manage Users")
         cursor.execute("SELECT full_name, username, role FROM users ORDER BY full_name")
         users = cursor.fetchall()
