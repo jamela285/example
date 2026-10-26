@@ -1,6 +1,8 @@
+import pandas as pd
 import sqlite3
 import hashlib
 import streamlit as st
+
 
 
 st.set_page_config(page_title="Mining Monitoring Application", layout="wide")
@@ -17,7 +19,6 @@ cursor.execute("""
     )
 """)
 conn.commit()
-
 
 def hash_password(password):
     """Hash a password (use a dedicated password-hashing library in production)."""
@@ -43,21 +44,31 @@ if "equipment" not in st.session_state:
         "engine_statuses": [], "maintenance_statuses": [], "downtimes": [],
         "availabilities": []
     }
+
 if "near_misses_records" not in st.session_state:
     st.session_state.near_misses_records = []
 
 permissions = {
-    "Administrator": ["Dashboard", "Worker Safety", "Safety Incidents", "Equipment database", "Equipment Monitoring", "Maintenance", "Risk Assessment", "Alerts & Notifications", "Manage Users"],
+    "Administrator":
+    ["Dashboard", "Worker Safety", "Safety Incidents",
+     "Equipment database", "Equipment Monitoring", "Maintenance", "Risk Assessment", "Alerts & Notifications", "Manage Users"],
+   
     "Safety Officer": ["Dashboard", "Worker Safety", "Safety Incidents", "Risk Assessment", "Alerts & Notifications"],
-    "Mining Engineer": ["Dashboard", "Worker Safety", "Safety Incidents", "Equipment database", "Equipment Monitoring", "Maintenance", "Risk Assessment", "Alerts & Notifications"],
-    "Maintenance Engineer": ["Dashboard", "Equipment database", "Equipment Monitoring", "Maintenance", "Alerts & Notifications"],
-    "Manager": ["Dashboard", "Worker Safety", "Safety Incidents", "Equipment database", "Equipment Monitoring", "Maintenance", "Risk Assessment", "Alerts & Notifications"]
+   
+    "Mining Engineer": ["Dashboard", "Worker Safety", "Safety Incidents", 
+                        "Equipment database", "Equipment Monitoring", "Maintenance", "Risk Assessment", "Alerts & Notifications"],
+   
+    "Maintenance Engineer": ["Dashboard", "Equipment database", "Equipment Monitoring",
+                             "Maintenance", "Alerts & Notifications"],
+   
+    "Manager": ["Dashboard", "Worker Safety", "Safety Incidents", "Equipment database", "Equipment Monitoring",
+                "Maintenance", "Risk Assessment", "Alerts & Notifications"]
 }
 
 
 def navigation_page():
-    st.title(" Mining Management System")
-    st.subheader("Welcome to the Mining Management System")
+    st.title(" Mining Monitoring Application")
+    st.subheader("Welcome to the Mining Monitoring application")
     st.write("Please sign up to create your account, or log in if you already have an account.")
     col1, col2 = st.columns(2)
     with col1:
@@ -68,7 +79,6 @@ def navigation_page():
         if st.button("LOGIN", use_container_width=True):
             st.session_state.page = "Login"
             st.rerun()
-
 
 def signup_page():
     st.title("Create Your Account")
@@ -148,25 +158,51 @@ def home_page():
     eq = st.session_state.equipment
 
     if module == "Dashboard":
-        st.header("Mining Monitoring Dashboard")
+        st.header("📊 Dashboard")
+
         col1, col2, col3 = st.columns(3)
-        col4, col5, col6 = st.columns(3)
-        col7, col8, col9 = st.columns(3)
-        col10, col11 = st.columns(2)
-        col1.metric("Total Workers", 200)
-        col2.metric("Total Safety Incidents", len(inc["incident_ids"]))
-        col3.metric("Near Misses", sum(st.session_state.near_misses_records))
-        col4.metric("High-Risk Observations", 0)
-        col5.metric("PPE Compliance", "N/A")
-        col6.metric("Total Equipment", len(eq["equipment_ids"]))
-        col7.metric("Equipment Available", sum(1 for a in eq["availabilities"] if a > 0))
-        col8.metric("Equipment Under Maintenance", eq["maintenance_statuses"].count("Under Maintenance"))
-        col9.metric("Equipment Alerts", sum(1 for i in range(len(eq["equipment_ids"])) if eq["brake_statuses"][i] == "Faulty" or eq["tyre_statuses"][i] == "Worn" or eq["engine_statuses"][i] == "Faulty" or eq["maintenance_statuses"][i] == "Overdue"))
-        col10.metric("Average Equipment Availability", f"{sum(eq['availabilities']) / len(eq['availabilities']):.1f}%" if eq["availabilities"] else "N/A")
-        col11.metric("Critical Equipment Alerts", 0)
+
+        with col1:
+            st.metric("Total Workers", 200)
+            st.subheader("🦺 Safety Overview")
+            st.bar_chart(pd.DataFrame({
+                "Count": [
+                    len(inc["incident_ids"]),
+                    sum(st.session_state.near_misses_records)
+                ]
+            }, index=["Incidents", "Near Misses"]))
+
+        with col2:
+            st.metric("Total Equipment", len(eq["equipment_ids"]))
+            st.subheader("🔧 Equipment Faults")
+            st.bar_chart(pd.DataFrame({
+                "Faults": [
+                    eq["brake_statuses"].count("Faulty"),
+                    eq["tyre_statuses"].count("Worn"),
+                    eq["engine_statuses"].count("Faulty"),
+                    eq["maintenance_statuses"].count("Overdue")
+                ]
+            }, index=["Brakes", "Tyres", "Engine", "Maintenance"]))
+
+        with col3:
+            st.metric(
+                "Average Equipment Availability",
+                f"{sum(eq['availabilities']) / len(eq['availabilities']):.1f}%"
+                if eq["availabilities"] else "N/A"
+            )
+            st.subheader("⚙️ Equipment Availability")
+
+            if eq["equipment_ids"]:
+                st.bar_chart(pd.DataFrame({
+                    "Availability (%)": eq["availabilities"]
+                }, index=eq["equipment_ids"]))
+
+            else:
+                st.info("No equipment registered.")
 
     elif module == "Worker Safety":
-        st.header("Worker Health and Safety Monitoring")
+
+        st.header("👷Worker Health and Safety Monitoring")
         worker_id = st.text_input("Worker ID")
         department = st.text_input("Department")
         job_role = st.text_input("Job Role")
@@ -462,4 +498,3 @@ if not st.session_state.logged_in:
         login_page()
 else:
     home_page()
-
