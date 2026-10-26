@@ -375,7 +375,6 @@ elif module == "Equipment database":
                     needs_attention = (eq["brake_statuses"][i] == "Faulty" or eq["tyre_statuses"][i] == "Worn" or eq["engine_statuses"][i] == "Faulty" or eq["maintenance_statuses"][i] == "Overdue")
                     if needs_attention: st.warning("Status: ATTENTION REQUIRED")
                     else: st.success("Status: Equipment is OK")
-
 elif module == "Risk Assessment":
         st.header("Mining Risk Assessment")
         hazard = st.text_input("Enter Hazard")
