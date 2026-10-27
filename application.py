@@ -5,7 +5,7 @@ import streamlit as st
 
 
 
-st.set_page_config(page_title="Mining Monitoring Application", layout="wide")
+st.set_page_config(page_title="Mining Health, Safety and Equipment Monitoring Application", layout="wide")
 
 conn = sqlite3.connect("mining_users.db", check_same_thread=False)
 cursor = conn.cursor()
@@ -66,8 +66,8 @@ permissions = {
 
 
 def navigation_page():
-    st.title(" Mining Monitoring Application")
-    st.subheader("Welcome to the Mining Monitoring application")
+    st.title(" Mining Health, Safety and Equipment Monitoring Application")
+    st.subheader("Welcome to the Mining Health, Safety and Equipment Monitoring Application")
     st.write("Please sign up to create your account, or log in if you already have an account.")
     col1, col2 = st.columns(2)
     with col1:
@@ -155,6 +155,7 @@ def home_page():
 
     inc = st.session_state.incidents
     eq = st.session_state.equipment
+    
     if module == "Dashboard":
         st.header("📊 Dashboard")
 
@@ -162,7 +163,7 @@ def home_page():
 
         with col1:
             st.metric("Total Workers", 200)
-            st.subheader("🦺 Safety Overview")
+            st.subheader(" Safety Overview")
             st.bar_chart(pd.DataFrame({
                 "Count": [
                     len(inc["incident_ids"]),
@@ -172,7 +173,7 @@ def home_page():
 
         with col2:
             st.metric("Total Equipment", len(eq["equipment_ids"]))
-            st.subheader("🔧 Equipment Faults")
+            st.subheader("Equipment Faults")
             st.bar_chart(pd.DataFrame({
                 "Faults": [
                     eq["brake_statuses"].count("Faulty"),
@@ -188,7 +189,7 @@ def home_page():
                 f"{sum(eq['availabilities']) / len(eq['availabilities']):.1f}%"
                 if eq["availabilities"] else "N/A"
             )
-            st.subheader("⚙️ Equipment Availability")
+            st.subheader("Equipment Availability")
 
             if eq["equipment_ids"]:
                 st.bar_chart(pd.DataFrame({
@@ -199,7 +200,7 @@ def home_page():
                 st.info("No equipment registered.")
     elif module == "Worker Safety":
 
-        st.header("👷Worker Health and Safety Monitoring")
+        st.header("Worker Health and Safety Monitoring")
         worker_id = st.text_input("Worker ID")
         department = st.text_input("Department")
         job_role = st.text_input("Job Role")
