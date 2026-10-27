@@ -67,7 +67,6 @@ permissions = {
 
 def navigation_page():
     st.title(" Mining Health, Safety and Equipment Monitoring Application")
-    st.subheader("Welcome to the Mining Health, Safety and Equipment Monitoring Application")
     st.write("Please sign up to create your account, or log in if you already have an account.")
     col1, col2 = st.columns(2)
     with col1:
